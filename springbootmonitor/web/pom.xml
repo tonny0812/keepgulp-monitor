@@ -4,18 +4,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.keepgulp.monitor</groupId>
-    <artifactId>springbootserver</artifactId>
+    <artifactId>web</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>springbootserver</name>
-    <description>Monitor project for Spring Boot</description>
+    <name>web</name>
+    <description>web</description>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.0.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>com.keepgulp.monitor</groupId>
+        <artifactId>springbootmonitor</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -25,9 +24,28 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.keepgulp.monitor</groupId>
+            <artifactId>entity</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.keepgulp.monitor</groupId>
+            <artifactId>service</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
@@ -36,17 +54,13 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
+    <!--多模块打包：只需在启动类所在模块的POM文件：指定打包插件 -->
     <build>
         <plugins>
             <plugin>
