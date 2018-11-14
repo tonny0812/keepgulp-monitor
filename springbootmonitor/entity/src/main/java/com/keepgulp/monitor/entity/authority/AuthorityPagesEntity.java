@@ -28,7 +28,7 @@ public class AuthorityPagesEntity {
     private String lastModifyUser;
 
     @CreatedDate
-    @Column(name = "time")
+    @Column(name = "create_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createTime;
 
