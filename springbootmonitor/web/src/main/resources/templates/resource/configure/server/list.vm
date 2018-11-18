@@ -1,0 +1,566 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备信息</title>
+<body class="gray-bg top-navigation">
+    #include("/index/include.vm")
+
+<div id="">
+    <div id="page-wrapper" class="gray-bg">
+        #include("/index/header.vm")
+        <div id="addConfig"></div>
+        <body>
+        <div class="modal fade" id="dispaly_detail_id_1" tabindex="-1"
+             style="z-index: 12050 !important;margin-top:30px;" role="dialog" data-backdrop="true">
+            <div class="modal-dialog" style="width:80%;margin-top:-10px;">
+                <div class="modal-content" style="height: 500px;">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                                class="sr-only">Close</span></button>
+                        <h4 class="modal-title">设备详情</h4>
+                    </div>
+                    <div class="modal-body fadeInUp" id="dispaly_detail_content_1">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="start_stop_monitor" tabindex="-1"
+             style="z-index: 12050 !important;margin-top:130px;" role="dialog" data-backdrop="true">
+            <div class="modal-dialog" style="width:60%;margin-top:-10px;">
+                <div class="modal-content" style="height: 300px;">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                                class="sr-only">Close</span></button>
+                        <h4 class="modal-title">监控启停设置</h4>
+                    </div>
+                    <div class="modal-body fadeInUp">
+                        <input type="hidden" value="" id="monitor_server_id">
+                        <div class="col-md-3" style="margin-top: 5px;">
+                        <div id="monitor_recover_time" ></div>
+                        </div>
+                        <div class="col-md-12" style=""></div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox"
+                                       value="600">
+                                <label for="inlineCheckbox">10分钟</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox2"
+                                       value="1200">
+                                <label for="inlineCheckbox2">20分钟</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox22"
+                                       value="1800">
+                                <label for="inlineCheckbox22">30分钟</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox23"
+                                       value="3000">
+                                <label for="inlineCheckbox23">50分钟</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12" style=""></div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox3"
+                                       value="3600">
+                                <label for="inlineCheckbox3">1小时</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox4"
+                                       value="7200">
+                                <label for="inlineCheckbox4">2小时</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox5"
+                                       value="21600">
+                                <label for="inlineCheckbox5">6小时</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox6"
+                                       value="43200">
+                                <label for="inlineCheckbox6">12小时</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12" style=""></div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox7"
+                                       value="86400">
+                                <label for="inlineCheckbox7">1天</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox8"
+                                       value="172800">
+                                <label for="inlineCheckbox8">2天</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox18"
+                                       value="259200">
+                                <label for="inlineCheckbox18">3天</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12" style=""></div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox9"
+                                       value="604800">
+                                <label for="inlineCheckbox9">1周</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox10"
+                                       value="1209600">
+                                <label for="inlineCheckbox10">2周</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox20"
+                                       value="1814400">
+                                <label for="inlineCheckbox20">3周</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12" style=""></div>
+                        <div class="col-md-3" style="margin-top: 5px;">
+                            <div class="radio checkbox-success checkbox-inline">
+                                <input type="radio" name="stopTime" id="inlineCheckbox11"
+                                       value="2419200">
+                                <label for="inlineCheckbox11">1月</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12" style=""></div>
+	                <button style="margin-left: 78%;margin-top: 5px;margin-bottom:45px;"
+	                        	onclick="saveMonitorConfig();" class="btn btn-primary btn-lg"
+	                        	type="button">
+	                            <i class="fa fa-check"></i>&nbsp;保存
+	                </button>
+                        <div class="col-md-12" style=""><br></div>
+                        <div class="col-md-12" style=""><br></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="dispaly_detail_id" tabindex="-1"
+             style="z-index: 4112050 !important;margin-top:30px;" role="dialog" data-backdrop="true">
+            <div class="modal-dialog" style="width:100%;margin-top:-10px;">
+                <div class="modal-content" style="height: 900px;">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title"><span id="containsId"></span>&nbsp;&nbsp;相关设备信息</h4>
+                    </div>
+                    <div class="modal-body fadeInUp" style="height: 900px;">
+                        <table id="getHostVm"
+                               class="table table-striped table-bordered table-hover dataTables-example">
+                            <thead>
+                            <tr nowrap="nowrap" role="rows">
+                                <th>环境名称</th>
+                                <th>IP地址</th>
+                                <th>所属业务线</th>
+                                <th>内存</th>
+                                <th>cpu</th>
+                                <th>硬盘</th>
+                                <th>负责人</th>
+                                <th>类型</th>
+                                <th>描述信息</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class=" animated fadeInRight">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <div style="float:left;">
+                                <div style="float: left;margin-top: -10px;">
+                                    <button class="btn btn-success " type="button"
+                                            onclick="addConfig();">
+                                        <i class="fa fa-upload"></i>&nbsp;&nbsp;<span class="bold">添加</span>
+                                    </button>
+                                </div>
+
+                                <div style="float:left;width: 120px;margin-left: 5px;margin-top: -10px;">
+                                    <select onchange="loadData('',$(this).val(),'')" class="form-control" id="entId">
+                                        <option value="">#if($status)$status#else 环境选择 #end</option>                                        <option value="0">--</option>
+                                        #foreach( $conf in $entname )
+                                            <option
+                                                    value='$!{conf.entName}'>
+                                                $!{conf.entName}
+                                            </option>
+                                        #end
+                                    </select>
+                                </div>
+                                <div style="float:left;width: 200px;margin-left: 5px;margin-top: -10px;">
+                                    <select onchange="loadData($(this).val())"  id="groupsId"
+                                            class="form-control">
+                                        <option value="">#if($status)$status#else 业务线请选择 #end</option>
+                                        #foreach( $conf in $groups )
+                                            <option
+                                                    value='$!{conf.groupsName}'>
+                                                $!{conf.groupsName}
+                                            </option>
+                                        #end
+                                    </select>
+                                </div>
+                                <div style="float:left;width: 200px;margin-left: 5px;margin-top: -10px;">
+                                    <select onchange="loadData()"  id="username"
+                                            class="form-control">
+                                        <option value="">#if($status)$status#else 负责人选择 #end</option>
+                                        #foreach( $conf in $username )
+                                            <option
+                                                    value='$!{conf.userName}'>
+                                                $!{conf.userName}
+                                            </option>
+                                        #end
+                                    </select>
+                                </div>
+                                <div style="float:left;width: 100px;margin-left: 5px;margin-top: -10px;">
+                                    <button class="btn btn-primary " id="queryBtn" type="button" style="float:left;margin-left: 15px;">
+                                            <i class="fa fa-link"></i>&nbsp;&nbsp;<span class="bold" onClick="load_page()">TOP</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ibox-content" style="overflow:scroll;margin-top: -10px;">
+                            <table id="listTable"
+                                   class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead>
+                                <tr nowrap="nowrap" role="rows">
+                                    <th>环境名称</th>
+                                    <th>IP地址</th>
+                                    <th onclick="loadData()">所属业务线</th>
+                                    <th>内存</th>
+                                    <th>cpu</th>
+                                    <th>硬盘</th>
+                                    <th>域名</th>
+                                    <th>负责人</th>
+                                    <th>类型</th>
+                                    <th>描述信息</th>
+                                    <th>状态</th>
+                                    <th>编辑/删除/(停止/开启)监控</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function showDetail(id) {
+                url = "/resource/configure/server/detail?detail=1"
+                result = post({id: id}, url)
+                $("#dispaly_detail_id_1").modal("toggle");
+                $('#dispaly_detail_content_1').html(result);
+            }
+
+            var site = "server"
+            function addConfig() {
+                url = "/resource/configure/" + site + "/add";
+                html = post({}, url);
+                $('#addConfig').html(html);
+                $('#add_getui_config').modal('toggle');
+            }
+
+            function load_page(ip, groupsName) {
+                if(!ip){
+                    ip = "";
+                }
+                if(!groupsName){
+                    groupsName = ""
+                }
+                window.open("/resource/configure/server/top?ip="+ip+"&groupsName="+groupsName)
+            }
+            /**
+             * 启动停止监控
+             */
+            function monitorConfig(serverId) {
+                $("#monitor_server_id").val(serverId)
+                url = "/resource/configure/" + site + "/stopMonitorSave";
+                $('#start_stop_monitor').modal('toggle');
+                monitor_time = post({serverId:serverId}, "/resource/configure/" + site + "/getStopMonitorTime");
+                $("#monitor_recover_time").html(monitor_time["data"]);
+            }
+
+
+            function saveMonitorConfig() {
+                id = $("#monitor_server_id").val()
+                url = "/resource/configure/" + site + "/stopMonitorSave";
+                parent.layer.confirm("点击同意后将停止该服务的所有报警", {
+                    btn: ['同意', '不同意'], //按钮
+                    shade: false//不显示遮罩
+                }, function () {
+                    value =  $("input[name='stopTime']:checked").val()
+                    if(!value){value=1}
+                    result = post({serverId: id, stopTime: value}, url);
+                    parent.layer.msg(JSON.stringify(result), {icon: 1})
+                }, function () {
+                    parent.layer.msg("取消操作", {icon: 2})
+                });
+            }
+
+            function updateConfig(id) {
+                url = "/resource/configure/" + site + "/detail";
+                html = post({id: id}, url);
+                $('#addConfig').html(html);
+                $('#add_getui_config').modal('toggle');
+            }
+
+            function deleteConfig(id) {
+                url = "/resource/configure/" + site + "/deleteSave";
+                parent.layer.confirm("点击同意后,将删除数据", {
+                    btn: ['同意', '不同意'], //按钮
+                    shade: false//不显示遮罩
+                }, function () {
+                    result = post({id: id}, url);
+                    parent.layer.msg(JSON.stringify(result), {icon: 1})
+                }, function () {
+                    parent.layer.msg("取消操作", {icon: 2})
+                });
+            }
+
+            function saveConfig(id) {
+                data = get_form_data();
+                console.log(data)
+                if (data["groupsId"] == 0) {
+                    parent.layer.msg("业务线必须选择", {icon: 2});
+                    return;
+                }
+                if (!data["ipAddress"]) {
+                    parent.layer.msg("ip地址必须填写", {icon: 2});
+                    return;
+                }
+                if (data["entId"] == 0) {
+                    parent.layer.msg("所属环境必须选择", {icon: 2});
+                    return;
+                }
+                if(data["cabinetId"] != null && data["cabinetId"] == "--" ){
+                    if(!data["cabinetLevel"]){
+                        parent.layer.msg("机柜层级必须选择", {icon: 2});
+                        return;
+                    }
+                }
+                if (data["cabinetId"] == "--"){
+                    data["cabinetId"] = 1;
+                }
+                if (data["osId"] == 0) {
+                    parent.layer.msg("操作系统类型必须选择", {icon: 2});
+                    return;
+                }
+                if (data["typeId"] == 0) {
+                    parent.layer.msg("服务器类型必须选择", {icon: 2});
+                    return;
+                }
+                if (data["osId"] == 0) {
+                    parent.layer.msg("操作系统类型必须选择", {icon: 2});
+                    return;
+                }
+                if (data["serviceId"] == 0) {
+                    parent.layer.msg("服务类型必须选择", {icon: 2});
+                    return;
+                }
+                if (data["userId"] == 0) {
+                    parent.layer.msg("所属用户必须选择", {icon: 2});
+                    return;
+                }
+                if (!data["description"]) {
+                    parent.layer.msg("描述信息必须填写", {icon: 2});
+                    return;
+                }
+                if (data["cabinet_id"] > 0) {
+                    if (!data["cabinetLevel"]) {
+                        parent.layer.msg("机柜必须必须选择", {icon: 2});
+                        return;
+                    }
+                }
+                if (id) {
+                    data["serverId"] = id;
+                }
+                url = "/resource/configure/" + site + "/saveServer";
+                result = post(data, url);
+                parent.layer.msg(JSON.stringify(result), {icon: 1});
+                setTimeout(function () {
+                    post_get("/monitor/configure/cache/all");
+                },100)
+                //  $('#listTable').dataTable().fnReloadAjax();
+            }
+            function loadData(groupsName, entName, userName) {
+                if (!groupsName) {
+                    groupsName = '$!{groupsName}';
+                }
+                if (!entName) {
+                    entName = ""
+                }
+                if (entName) {
+                    entName = groupsName;
+                    groupsName = ""
+                }
+                if(!groupsName){
+                    groupsName = $('#groupsId').val()
+                }
+                if(!entName){
+                    entName = $('#entId').val()
+                }
+                if (!entName) {
+                    entName = ""
+                }
+                if (!groupsName) {
+                    groupsName = '$!{groupsName}';
+                }
+                if(!userName){
+                    userName = $('#username').val()
+                }
+                $("#listTable").dataTable({
+                    "filter": true,//去掉搜索框
+                    "ordering": false, // 是否允许排序
+                    "paginationType": "full_numbers", // 页码类型
+                    "destroy": true,
+                    "processing": true,
+                    "serverSide": true,
+                    "scrollX": true, // 是否允许左右滑动
+                    "displayLength": 10, // 默认长度
+                    "ajax": { // 请求地址
+                        "url": "/resource/configure/" + site + "/listData?t1=" + new Date().getTime() + "&groupsName=" + groupsName + "&typeName=$!{typeName}&time=$!{time}&isOff=$!{isOff}&entname=" + entName+"&userName="+userName+"&t=$!{t}&inventoryId=$!{inventoryId}&domain=$!{domain}",
+                        "type": 'post'
+                    },
+
+                    "columns": [ // 数据映射
+                        {
+                            "data": "entName", "mRender": function (data, type, full) {
+                            return '<span onclick="loadData(\'' + data + '\',1)">' + data + "</span>"
+                          }
+                        },
+                        {
+                            "data": "ipAddress", "mRender": function (data, type, full) {
+                            return "<li title='点击显示设备详情' onclick=\'showDetail(" + full["serverId"] + ")\' class=\'fa fa-info-circle\'></li>&nbsp;&nbsp;<span onclick=\"getHostVm('" + data + "')\">" + data + "</span>"
+                        }
+                        },
+                        {
+                         "data": "groupsName", "mRender": function (data, type, full) {
+                            return '<span onclick="loadData(\'' + data + '\')">' + data + "</span>"
+                          }
+                        },
+                        {"data": "memory"},
+                        {"data": "cpu"},
+                        {"data": "diskSize"},
+                        {"data": "domainName", "mRender": function (data, type, full) {
+                            if(data && data.length > 10){
+                                return "<span title='"+data+"'>" + data.substring(0, 10) +"</span>";
+                            }
+                            return data;
+                        }
+                        },
+                        {"data": "userName"},
+                        {"data": "typeName"},
+                        {"data": "description", "mRender": function (data, type, full) {
+                            if(data && data.length > 10){
+                                return "<span title='"+data+"'>" + data.substring(0, 10) +"</span>";
+                            }
+                            return data;
+                        }
+                        },
+                        {
+                            "data": "status", "mRender": function (data,type,full) {
+                            if (data == 0) {
+                                css = "btn-danger"
+                            } else {
+                                css = "btn-primary"
+                            }
+                            return '<button onclick="window.open(\'/monitor/graph/all/status?ip='+full["ipAddress"]+'\')" class="btn ' + css + ' btn-circle circle" style="width: 15px;height: 15px;" type="button"> </button>'
+                          }
+                        },
+                        {"data": "serverId", "mRender": function (data, type, full) {
+                            return '<button type="button" onclick="updateConfig(' + data + ')" class="btn btn-sm btn-success">编辑</button>&nbsp;' +
+                                    '<button type="button" onClick="deleteConfig(' + data + ')" class="btn btn-sm btn-danger">删除</button>&nbsp;'+
+                                    '<button type="button" onClick="load_page(\'\',\''+full["groupsName"]+'\')"class="btn btn-sm btn-primary">组TOP</button>&nbsp;'+
+                                    '<button type="button" onClick="load_page(\'' + full["ipAddress"] + '\')" class="btn btn-sm btn-master">TOP</button>';
+                           }
+                        },
+                    ],
+                    "fnRowCallback": function (row, data) { // 每行创建完毕的回调
+                        $(row).data('recordId', data.recordId);
+                    }
+                });
+            }
+
+            loadData();
+
+            function getHostVm(hostIp) {
+                $("#containsId").html(hostIp);
+                $("#dispaly_detail_id").modal("toggle");
+                setTimeout(function () {
+                    getHostVmData(hostIp)
+                }, 1000)
+
+            }
+
+            function getHostVmData(hostIp) {
+                $("#getHostVm").dataTable({
+                    "bLengthChange": false, // 下啦选择每页显示
+                    "filter": true,//去掉搜索框
+                    "ordering": false, // 是否允许排序
+                    "paginationType": "full_numbers", // 页码类型
+                    "destroy": true,
+                    "processing": false,
+                    "serverSide": true,
+                    "scrollX": true, // 是否允许左右滑动
+                    "displayLength": 100, // 默认长度
+                    "ajax": { // 请求地址
+                        "url": "/resource/configure/" + site + "/listData?t=" + new Date().getTime() + "&hostIp=" + hostIp,
+                        "type": 'post'
+                    },
+
+                    "columns": [ // 数据映射
+                        {"data": "entName"},
+                        {"data": "ipAddress"},
+                        {"data": "groupsName"},
+                        {"data": "memory"},
+                        {"data": "cpu"},
+                        {"data": "diskSize"},
+                        {"data": "userName"},
+                        {"data": "typeName"},
+                        {"data": "description"},
+                    ],
+                    "fnRowCallback": function (row, data) { // 每行创建完毕的回调
+                        $(row).data('recordId', data.recordId);
+                    }
+                });
+            }
+
+        </script>
+        </body>
+</html>

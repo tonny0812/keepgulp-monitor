@@ -43,7 +43,7 @@ public class ResourceCabinetEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifyTime;
 
-    @Column(name = "create_user",columnDefinition="varchar(32) DEFAULT NULL COMMENT '最近修改用户'")
+    @Column(name = "last_modify_user",columnDefinition="varchar(32) DEFAULT NULL COMMENT '最近修改用户'")
     private String lastModifyUser;
 
     @Column(name = "cabinet_scope",columnDefinition="varchar(32) DEFAULT NULL COMMENT '机柜所属区域'")

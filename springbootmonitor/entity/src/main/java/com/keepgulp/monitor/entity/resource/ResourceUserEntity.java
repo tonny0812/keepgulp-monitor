@@ -5,15 +5,15 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  */
 @Entity
-@Table(name = "t_resource_service",
-        uniqueConstraints = {@UniqueConstraint(columnNames="service_name")})
+@Table(name = "t_resource_user")
 @Data
-public class ResourceUserEntity{
+public class ResourceUserEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

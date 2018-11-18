@@ -26,7 +26,7 @@ public class ResourceNetworkAddressEntity{
     @Column(name = "ip_subffix",columnDefinition="int(11) DEFAULT NULL COMMENT 'ip地址后缀'")
     private Integer ipSubffix;
 
-    @Column(name = "ip_subffix",columnDefinition="int(11) DEFAULT NULL COMMENT '使用状态'")
+    @Column(name = "status",columnDefinition="int(11) DEFAULT NULL COMMENT '使用状态'")
     private Integer status;
 
     @LastModifiedDate

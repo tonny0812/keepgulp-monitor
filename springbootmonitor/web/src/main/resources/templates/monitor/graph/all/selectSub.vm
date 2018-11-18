@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+#include("/index/dygraph.vm")
+
+#foreach($name in $names)
+    #foreach($n in $types.get($name))
+
+    <div id="${name}${n.replace('---','').replace(".","_").replace(" ","")}Border" class="col-md-4"
+         style="border:solid 1px #f0f0f0;margin-left:-20px;width: 48%;margin:10px;">
+        <div class="ibox float-e-margins">
+            <div class="title-img">
+                        <span class="default pull-right" onclick="load${name}${n.replace('---','').replace(".","_").replace(" ","").replace("-","")}(1);"><i
+                                class="fa fa-search-plus" style="font-size:19px;margin-top:10px;margin-right: 10px;"></i></span>
+                <h5 align="center" style="margin-top: 10px;margin-left: 10px;">${name}&nbsp;${n.replace("SLASH","/").replace('---','&nbsp;')}</h5>
+            </div>
+            <input type="hidden" id="${name}${n.replace('---','').replace(".","_").replace(" ","")}BorderWidth" value="49">
+            <div id="${name}${n.replace('---','').replace(".","_").replace(" ","")}"
+                 style="width: 100%;height: 360px;margin-bottom:10px;"></div>
+        </div>
+    </div>
+    #end
+#end
+
+<div id="Border" class="col-md-4"
+     style="border:solid 1px #f0f0f0;margin-left:-20px;width: 48%;margin:10px;">
+    <div class="ibox float-e-margins">
+        <div class="title-img">
+                        <span class="default pull-right" onclick=""><i
+                                class="fa fa-search-plus" style="font-size:19px;margin-top:10px;margin-right: 10px;"></i></span>
+            <h5 align="center" style="margin-top: 10px;margin-left: 10px;"></h5>
+        </div>
+        <input type="hidden" id="BorderWidth" value="49">
+        <div id=""
+             style="width: 100%;height: 360px;margin-bottom:10px;"></div>
+    </div>
+</div>
+<script>//Flot Multiple Axes Line Chart
+
+    #foreach($name in $names)
+        #foreach($n in $types.get($name))
+        function load${name}${n.replace('---','').replace(".","_").replace(" ","").replace("-","")}(zoom) {
+            if (zoom) {
+                setWidth('${name}${n.replace('---','').replace(".","_").replace(" ","")}',1)
+            }
+
+            graph_min("1ab394", '${name}${n.replace(
+                '---','').replace(" ","").replace(".","_")}', "${name} ${n.replace("SLASH","/").replace('---',' ')}", "${name} ${n.replace("SLASH","/").replace('---',' ')}", "/monitor/graph/historyData?ip=${ip}&name=${n}&type=$name","","$!{startT}","$!{endT}", "select")
+
+        }
+##            setTimeout(function () {
+##                load${name}${n.replace('---','').replace(".","_").replace(" ","").replace("-","")}()
+##
+##            },Math.round(Math.random()*10)*500)
+        #end
+    #end
+
+
+function loadimg() {
+
+    #foreach($name in $names)
+        #foreach($n in $types.get($name))
+        setTimeout(function () {
+            load${name}${n.replace('---','').replace(".","_").replace(" ","").replace("-","")}()
+        },Math.round(Math.random()*10)*500)
+        #end
+    #end
+
+}
+
+loadimg();
+
+</script>

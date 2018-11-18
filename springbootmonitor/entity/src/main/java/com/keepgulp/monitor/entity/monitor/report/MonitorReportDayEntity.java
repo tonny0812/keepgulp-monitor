@@ -45,7 +45,7 @@ public class MonitorReportDayEntity {
 
     @Column(name = "operator_time")
     @Temporal(TemporalType.TIMESTAMP)
-    private String operatorTime;
+    private Date operatorTime;
 
     @Column(name = "groups_id",columnDefinition="int(11) DEFAULT NULL COMMENT '组ID'")
     private Integer groupsId;
@@ -59,5 +59,5 @@ public class MonitorReportDayEntity {
 
     @Column(name = "start_time")
     @Temporal(TemporalType.TIMESTAMP)
-    private String startTime;
+    private Date startTime;
 }

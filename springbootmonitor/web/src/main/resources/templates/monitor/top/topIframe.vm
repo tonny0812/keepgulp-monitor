@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<link href="/static/top/css/jquery.snippet.min.css" rel="stylesheet">
+
+<script src="/static/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="/static/js/bootstrap-select.js"></script>
+
+<script type="text/javascript" src="/static/top/js/snippet/jquery.snippet.min.js"></script>
+
+<script type="text/javascript" src="/static/top/js/jtopo-min.js"></script>
+<script type="text/javascript" src="/static/top/js/toolbar.js"></script>
+<div id="myDiagramDiv" style="border: solid 0px black; width:100%; height:700px">
+    <canvas width="5850" height="1550" id="canvas" ></canvas>
+</div>
+
+<script>
+
+function post(paramter, url) {
+    var result = "";
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: paramter,
+        async: false,
+        success: function (data) {
+            result = data;
+        }
+    });
+    return result;
+}
+
+function get_server_detail(ip){
+     url = "/resource/configure/server/listData"
+     result = post({start:1, length:2,draw:1, "ipAddress":ip}, url)
+     if(result){
+        id = result["data"][0]["serverId"]
+        url = '/resource/configure/server/detail?detail=1&start=1&length=1&draw=1&id='+id
+        result = post({topId:id}, url);
+        $('#show_server_detail', parent.document).modal('toggle');
+        $('#show_server_detail_html', parent.document).html(result);
+     }
+}
+
+function set_top_data(key, objt){
+   $("#" + key, parent.document).val(objt.editData[key])
+}
+
+
+function get_status(sta){
+  switch(sta){
+    case "1":
+        return ["正常","green", "0,0,0"];
+    case "2":
+        return ["危险", "red2", "255,0,0"];
+    case "3":
+        return ["警告", "red1", "255,255,0"];
+    case "4":
+        return ["未知", "gray","211,211,211"];
+    default:
+        return ["正常", "green", "0,0,0"];
+  } 
+}
+
+function edit_top(objt){
+    if(objt.editData["graphType"] == "text"){
+       $("#inlineCheckbox2",   parent.document).prop("checked", "true")
+        window.parent.change_type(2)
+    }else{
+       $("#inlineCheckbox1",   parent.document).prop("checked", "true")
+        window.parent.change_type(1)
+    }
+    if(objt.editData["showIp"] == 1){
+        $("#show_ip_title", parent.document).prop("checked", "true")
+    }else{
+        $("#show_ip_title", parent.document).prop("checked", "")
+    }
+    var key_data = ["topLinkColor", "top_text", "topLinkValue", "topLinkTextColor", "topLinkType", "topLinkSize", "metricUpdateTime", "topLinkValueCircle", "imageConnectTopId"]
+    for (var i=0;i<key_data.length;i++){
+       set_top_data(key_data[i], objt);
+    }
+    $("#top_ip",   parent.document).val(objt.editData["text"])
+    $("#top_description", parent.document).val(objt.editData["description"])
+    $("#top_left", parent.document).val(objt.getBound()["left"])
+    $("#top_top",  parent.document).val(objt.getBound()["top"])
+    if(objt.editData["to"]=="image" || objt.editData["to"] == "text"){
+       $("#top_to",  parent.document).val("")
+    }else{
+       $("#top_to",  parent.document).val(objt.editData["to"])
+    }
+
+    if(objt.editData["circleTop"]){
+        $("#circleTop", parent.document).prop("checked", "true")
+        $("#show_circle_top_id", parent.document).show();
+        $('#top_select_images_circle', parent.document).attr('src', '/static/top/img/statistics/'+objt.editData["circleTopImage"])
+        $("#topLinkValueCircle",  parent.document).val(objt.getBound()["topLinkValueCircle"])
+    }else{
+        $("#circleTop", parent.document).prop("checked", "")
+        $("#show_circle_top_id", parent.document).hide();
+    }
+    $("#top_src", parent.document).val(objt.key)
+    $("#top_select_images", parent.document).attr("value", objt.editData["img"])
+    top_img = $('#top_select_images', parent.document).html().split("\n");
+    old_html = ""
+    new_html = "<select class='selectpicker bla bla bli form-control' data-live-search='true' onchange=\"change_image($(this).val())\" id='top_select_images'>"
+    new_html += "<option value='"+objt.editData["img"]+"'>"+objt.editData["img"]+"</option>\n"
+    $('#top_select_images_div', parent.document).empty();
+    for(topi=0;topi<top_img.length;topi++){
+      topis = top_img[topi]
+      to = topis.replace(/<option value="/g,"");
+      to = to.replace(/<\/option>/g," ");
+      to = to.replace(/"/g,"")
+      to = to.replace(/>/g," ")
+      to = to.trim()
+      to = to.split(" ")
+      if(to[0]!=objt.editData["img"] && to[0].length > 0){
+        new_html += "<option value='"+to[0]+"'>"+to[0]+"</option>\n"
+      }
+    }
+    new_html += "</select>"
+    $('#top_select_images_div', parent.document).append(new_html);
+    $('#top_select_images', parent.document).selectpicker('refresh');
+    $('#select_images', parent.document).attr('src', '/static/top/img/statistics/'+objt.editData["img"])
+}
+
+/*16进制颜色转为RGB格式*/  
+String.prototype.colorRgb = function(){  
+    //十六进制颜色值的正则表达式  
+    var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;  
+    var sColor = this.toLowerCase();  
+    if(sColor && reg.test(sColor)){  
+        if(sColor.length === 4){  
+            var sColorNew = "#";  
+            for(var i=1; i<4; i+=1){  
+                sColorNew += sColor.slice(i,i+1).concat(sColor.slice(i,i+1));     
+            }  
+            sColor = sColorNew;  
+        }  
+        //处理六位的颜色值  
+        var sColorChange = [];  
+        for(var i=1; i<7; i+=2){  
+            sColorChange.push(parseInt("0x"+sColor.slice(i,i+2)));    
+        }  
+        return sColorChange.join(",")
+    }else{  
+        return sColor;    
+    }  
+};  
+
+function get_count(datas, data) {
+    if (!data) {
+        return datas
+    }
+    for (i = 0; i < data.length; i++) {
+        datas += data[i][1]
+    }
+    return datas
+}
+
+
+// 获取今日总流量
+function get_top_link_value(ip, index_name, type) {
+   if(!index_name){return}
+   indexs = index_name.split("|")
+   count_url = "/monitor/graph/historyData?ip=" + ip + "&name="+indexs[1]+"&dayNumber=&type="+indexs[0]+"&startT=&endT="
+   if(type == "last"){
+     count_url = count_url + "&last=1"
+   }
+   data = post({}, count_url)
+   if(type=="last" && data){
+      return indexs[1] +"---->" + data[0][1]
+   }
+   return index_name +"---->" + data 
+}
+
+
+function make_top(){
+        var canvas = document.getElementById('canvas');
+        var stage = new JTopo.Stage(canvas);
+        //显示工具栏
+        //showJTopoToobar(stage);
+
+        var scene = new JTopo.Scene();
+        //scene.background = './img/bg.jpg';
+        scene.mode = "edit"
+
+        // 存放当前图片所有指标数据
+        var index_maps = {}
+        var index_maps_data = {}
+
+        function node(x, y, img) {
+                var node = new JTopo.Node();
+                node.setImage('/static/top/img/statistics/' + img, true);
+                node.setLocation(x, y);
+                scene.add(node);
+                return node;
+        }
+
+        function reset_top(key, x, y, random){
+            $("#moveTopSettimeout", parent.document).val(random)
+            list = {};
+            _data = {}
+            var data = $("#mySavedModel", parent.document).val().replace(/\n/g,"")
+            var vdata = JSON.parse(data);
+            var nodeData = vdata["nodeDataArray"]
+            var linkData = vdata["linkDataArray"]
+
+            for(dataI=0;dataI<nodeData.length;dataI++){
+               if(key == nodeData[dataI]["key"]){
+        	var d ;
+        	d = nodeData[dataI];
+        	_data = d
+        	_data["x"] =  parseInt(x)
+        	_data["y"] = parseInt(y)
+        	nodeData[dataI] = _data
+               }
+            }
+            list["nodeDataArray"] = nodeData
+            if($("#top_to").val()){
+        	from = {}
+        	from["src"] = key
+        	from["to"] = $("#top_to").val()
+        	from["status"] = "ok"
+        	linkData.push(from)
+            }
+            list["linkDataArray"] = linkData
+            $("#mySavedModel", parent.document).val(JSON.stringify(list))
+
+            setTimeout(function(){
+                 var o = $("#moveTopSettimeout", parent.document).val()
+                 if(o==random){
+                    $("#topIframe", parent.document).prop("src", "/monitor/top/topIframe");
+                 }
+            },2000)
+    }
+
+        
+    // 简单连线
+    function newLink(nodeA, nodeZ, text,linkColor,dashedPattern , lineWidth, topLinkTextColor){
+        var link = new JTopo.Link(nodeA, nodeZ, text);        
+        link.lineWidth = lineWidth; // 线宽
+        if(dashedPattern){
+           link.dashedPattern = dashedPattern; // 虚线
+        }
+        link.bundleOffset = 60; // 折线拐角处的长度
+        link.bundleGap = 20; // 线条之间的间隔
+        link.textOffsetY = 3; // 文本偏移量（向下3个像素）
+        link.strokeColor = linkColor;
+        link.fontColor = topLinkTextColor;
+        scene.add(link);
+        return link;
+    }
+    
+    // 折线
+    function newFoldLink(nodeA, nodeZ, text, linkColor,  direction, dashedPattern, lineWidth, topLinkTextColor){
+        var link = new JTopo.FoldLink(nodeA, nodeZ, text);
+        link.strokeColor = linkColor;
+        link.direction = direction || 'horizontal';
+        link.arrowsRadius = 25; //箭头大小
+        link.lineWidth = lineWidth; // 线宽
+        link.bundleOffset = 60; // 折线拐角处的长度
+        link.bundleGap = 20; // 线条之间的间隔
+        link.textOffsetY = 3; // 文本偏移量（向下3个像素）
+        link.fontColor = topLinkTextColor;
+        if(dashedPattern){
+           link.dashedPattern = dashedPattern; // 虚线
+        }
+        scene.add(link);
+        return link;
+    }
+    
+    // 二次折线
+    function newFlexionalLink(nodeA, nodeZ, text, linkColor, direction, dashedPattern, lineWidth, topLinkTextColor){
+        var link = new JTopo.FlexionalLink(nodeA, nodeZ, text);
+        link.strokeColor = linkColor;
+        link.direction = direction || 'horizontal';
+        link.arrowsRadius = 10;
+        link.lineWidth = lineWidth; // 线宽
+        link.offsetGap = 35;
+        link.bundleGap = 15; // 线条之间的间隔
+        link.textOffsetY = 10; // 文本偏移量（向下15个像素）
+        link.strokeColor = linkColor;
+        link.fontColor = topLinkTextColor;
+        if(dashedPattern){
+           link.dashedPattern = dashedPattern; // 虚线
+        }
+        scene.add(link);
+        return link;
+    }
+    
+    // 曲线
+    function newCurveLink(nodeA, nodeZ, text, linkColor, dashedPattern, lineWidth, topLinkTextColor){
+        var link = new JTopo.CurveLink(nodeA, nodeZ, text);
+        link.lineWidth = lineWidth; // 线宽
+        link.arrowsRadius = 10;
+        link.offsetGap = 35;
+        link.textOffsetY = 10; // 文本偏移量（向下15个像素）
+        link.bundleGap = 15; // 线条之间的间隔
+        link.strokeColor = linkColor;
+        link.fontColor = topLinkTextColor;
+        if(dashedPattern){
+           link.dashedPattern = dashedPattern; // 虚线
+        }
+        scene.add(link);
+        return link;
+    }
+
+    function textNodeF(ip, x, y) {
+            var textNode = new JTopo.TextNode(ip);
+            textNode.font = '12px 微软雅黑';
+            textNode.fontColor = '0,0,0';
+            textNode.setLocation(x, y);
+            return textNode
+    }
+
+    function linkNode(nodeA, nodeZ, f, width) {
+        var link;
+        if (f) {
+          link = new JTopo.FoldLink(nodeA, nodeZ);
+        } else {
+           link = new JTopo.Link(nodeA, nodeZ);
+        }
+        link.lineWidth = width; // 线宽
+        link.bundleOffset = 60; // 折线拐角处的长度
+        link.bundleGap = 10; // 线条之间的间隔
+        link.textOffsetY = -43; // 文本偏移量（向下3个像素）
+        link.strokeColor = '0,200,255';
+        link.fontColor = '0,0,0';
+        //link.text = "traffic";
+        //if(traffic){
+        //   link.text = traffic;
+        // }
+        link.direction = 'vertical';
+        scene.add(link);
+        return link;
+    }
+
+    function make_metric_top_circle(scene, vmNode, index, ip, i){
+       if(!index){return}
+       x = vmNode["x"] - 100 
+       y = vmNode["y"] + 50 
+       var index_data = index.split(",")
+       for(index_datai=0; index_datai<index_data.length;index_datai++){
+              var k = "indexdata"+d["key"] + ip.replace(/./g,"") + index_data[index_datai].replace(/./g,"").replace(/|/g,"")
+              var topLinkValue = get_top_link_value(ip, index_data[index_datai], "last");
+              window[k] = textNodeF(topLinkValue, x+100, y+(20*index_datai));
+              // 点击事件
+              window[k].ip = ip.split("_")[0]
+              window[k].index = index_data[index_datai] 
+              window[k].click(function () {
+                   window.open("/monitor/graph/all/index?ip="+this.ip+"&width=100&select="+this.index)
+              })
+              scene.add(window[k]);
+       }
+       var k = "indexdata"+d["key"] + ip.replace(/./g,"") + index.replace(/./g,"").replace(/|/g,"")
+       window[k] = textNodeF("ALL", x+100, y+(20*index_data.length+1));
+       window[k].ip = ip
+       window[k].index_length = index_data.length
+       window[k].index = index
+       window[k].click(function () {
+             width =  100
+           if(this.index_length % 2 == 0) {
+             width = 49 
+           } 
+           if(this.index_length % 3 == 0 || this.index_length > 3 ) {
+             width = 32 
+           } 
+           window.open("/monitor/graph/all/index?ip="+this.ip+"&width="+width+"&select="+this.index)
+       })
+       scene.add(window[k]);
+      }
+
+      
+      // 监控状态小圆点添加
+      //var icons = ['green', 'blue', 'red1', 'red2','gray'];
+      function addNode(text, icon, x , y){
+          var node = new JTopo.Node();
+          node.setImage('/static/top/img/topo/'+ icon +'.png', true);
+          node.fontColor = '0,0,0';
+          node.setLocation(x, y);
+          node.textPosition = "Middle_Left";
+          scene.add(node);
+
+          
+          node.mouseover(function(){
+              this.text = text;
+          });
+          node.mouseout(function(){
+              this.text = null;
+          });
+          return node;
+      }
+
+
+
+
+    function make_metric_top(scene, d, timer){
+       ip = d["text"]
+       index =  d["topLinkValue"]
+       if(!index){return}
+       var index_data = index.split(",")
+       for(index_datai=0; index_datai<index_data.length;index_datai++){
+              var k = "indexdata"+d["key"]+ index_data[index_datai].replace(/\|/g,"").replace(/\./g, "")
+              if(window[k]){
+                 scene.remove(window[k]);
+                 if(window[k+"icon"]){
+                    scene.remove(window[k+"icon"]);
+                 }
+              }
+              //var topLinkValue = get_top_link_value(ip, index_data[index_datai], "last");
+              var topLinkValue = index_maps_data[ip+index_data[index_datai]]
+              var stat = get_status(index_maps_data[ip+index_data[index_datai]+"status"]);
+
+              window[k+"icon"] = addNode(stat[0], stat[1], d["x"]+110,  d["y"]+(20*index_datai));    
+
+              window[k]=  textNodeF(" " + topLinkValue, d["x"]+129, d["y"]+(20*index_datai));
+              window[k].ip = ip 
+              window[k].index_datai = index_datai
+              window[k].index = index_data[index_datai] 
+              window[k].click(function () {
+                 window.open("/monitor/graph/all/index?ip="+this.ip+"&width=100&select="+this.index)
+              })
+              scene.add(window[k]);
+       }
+       if(timer){return}
+           var k = "indexdata"+d["key"] + ip.replace(/./g,"") + index.replace(/./g,"").replace(/|/g,"")
+           window[k] = textNodeF("ALL", d["x"]+110, d["y"]+(20*index_data.length+1));
+           window[k].ip = ip
+           window[k].index_length = index_data.length
+           window[k].index = index
+           window[k].click(function () {
+                 width =  100
+               if(this.index_length % 2 == 0) {
+                 width = 49 
+               } 
+               if(this.index_length % 3 == 0 || this.index_length > 3 ) {
+                 width = 32 
+               } 
+               window.open("/monitor/graph/all/index?ip="+this.ip+"&width="+width+"&select="+this.index)
+           })
+           scene.add(window[k]);
+      }
+
+
+
+       var data = $("#mySavedModel", parent.document).val().replace(/\n/g,"")
+       var vdata = JSON.parse(data);
+       var dataNodeData = vdata["nodeDataArray"]
+       var linkNodeData = vdata["linkDataArray"]
+
+       // 获取所有指标名称和对应的IP地址
+       function set_index_name(){
+            for(dataI=0;dataI<dataNodeData.length;dataI++){
+              var d ;
+              d = dataNodeData[dataI];
+              index =  d["topLinkValue"]
+              if(!index){continue}
+              var index_data = index.split(",")
+              for(index_datai=0; index_datai<index_data.length;index_datai++){
+                 if( index_maps[index_data[index_datai]]){
+                    index_maps[index_data[index_datai]].push(d["text"])
+                 }else{
+                    index_maps[index_data[index_datai]] = []
+                    index_maps[index_data[index_datai]].push(d["text"])
+                 }
+              }
+           }
+       }
+
+       set_index_name()
+
+
+       function get_index_name_data(){
+         var url = "/monitor/top/data/allData"
+
+         for(var i in index_maps){
+            var index_r = post({ips:index_maps[i].join(","), name:i}, url)
+            var index_status = index_r["status"]
+            for(var j in index_status){
+               index_maps_data[j+"status"] = index_status[j]
+            }
+            var index_metric = index_r["metric"]
+            for(var j in index_metric){
+               index_maps_data[j] = i.split("|")[1]+" -- "+index_metric[j]
+            }
+         }
+
+       }
+
+      get_index_name_data();
+       
+       // 获取指标和状态数据
+       var get_data_interval = setInterval(function(){
+           get_index_name_data();
+       },8000)
+
+
+       for(dataI=0;dataI<dataNodeData.length;dataI++){
+          var d ;
+          d = dataNodeData[dataI];
+          if(d["circleTop"] == "1"){
+             window["nodeData"+d["key"]] = new JTopo.Node('root');
+             window["nodeData"+d["key"]].setImage('/static/top/img/statistics/' + d["img"], true);
+             window["nodeData"+d["key"]].setSize(30, 26);
+             window["nodeData"+d["key"]].setLocation(d["x"],d["y"]);
+             window["nodeData"+d["key"]].layout = {type: 'circle', radius: 181};
+             window["nodeData"+d["key"]].key = d["key"]
+             window["nodeData"+d["key"]].editData = d
+
+             // 双击编辑事件
+             window["nodeData"+d["key"]].dbclick(function () {
+                edit_top(this)
+                $("#mySavedModelDelete", parent.document).val(JSON.stringify(this.editData))
+             })
+             scene.add(window["nodeData"+d["key"]]);
+          }
+       }
+       for(dataI=0;dataI<dataNodeData.length;dataI++){
+          var d ;
+          d = dataNodeData[dataI];
+          if(d["showIp"]==1){
+             window["nodeData"+d["key"]+d["text"].replace(/./g,"")] = textNodeF(d["text"], parseInt(d["x"]) - 20, parseInt(d["y"])-20);
+             window["nodeData"+d["key"]+d["text"].replace(/./g,"")].ip = d["text"]
+            // 点击事件
+             window["nodeData"+d["key"]].click(function () {
+                 get_server_detail(this.ip)
+             })
+             scene.add(window["nodeData"+d["key"]+d["text"].replace(/./g,"")]);
+          }
+
+          if(d["circleTop"] == "1"){
+             continue
+          }
+
+          if(d["graphType"] == "text"){
+             window["nodeData"+d["key"]] = textNodeF(d["top_text"], d["x"], d["y"]);
+             scene.add(window["nodeData"+d["key"]]);
+          }else if(d["graphTypeCircle"]){
+                  window["nodeData"+d["key"]] = node("","",d["circleTopImage"]);
+                  window["nodeData"+d["key"]].radius = 10;
+                  window["nodeData"+d["key"]].fillStyle = '255,255,0';
+                  window["nodeData"+d["key"]].setLocation(scene.width * Math.random(), scene.height * Math.random());
+                  scene.add(window["nodeData"+d["key"]]);                                
+                  scene.add(new JTopo.Link(window["nodeData"+d["to"]], window["nodeData"+d["key"]]));
+                  make_metric_top_circle(scene, window["nodeData"+d["key"]], d["topLinkValueCircle"], "10.16.35.101", d["key"])
+          }else{                                                                             
+                   window["nodeData"+d["key"]] = node(d["x"], d["y"], d["img"]);                         
+                   window["nodeData"+d["key"]].alarm = '';                                            
+                   window["nodeData"+d["key"]].alarmColor = '0,0,0';
+          }
+         
+
+
+          if($("#showFullImage", parent.document).val()=="1"){
+             window["nodeData"+d["key"]].dragable = false;
+          }else{
+             window["nodeData"+d["key"]].dragable = true;
+          }
+          window["nodeData"+d["key"]].key = d["key"]
+          window["nodeData"+d["key"]].editData = d
+
+          // 双击编辑事件
+          window["nodeData"+d["key"]].dbclick(function () {
+              edit_top(this)
+              $("#mySavedModelDelete", parent.document).val(JSON.stringify(this.editData))
+          })
+
+          
+          if(!d["graphTypeCircle"]){
+             make_metric_top(scene, d)
+          }
+
+
+          // 点击跳转到top图的
+          if(d["imageConnectTopId"]){
+               window["nodeData"+d["key"] + "connecttotop"]  = addNode("跳转到", "blue", parseInt(d["x"]) + 20, parseInt(d["y"])+120);    
+	       //window["nodeData"+d["key"] + "connecttotop"] = textNodeF(parseInt(d["x"]) + 20, parseInt(d["y"])+120);
+               window["nodeData"+d["key"] + "connecttotop"].imageConnectTopId = d["imageConnectTopId"]
+	       window["nodeData"+d["key"] + "connecttotop"].click(function () {
+                // 更新存储的top点开顺序的ID，做左右可点击操作
+                var old = $("#save_top_topid_data", parent.document).val()
+                var news = old + "," + this.imageConnectTopId
+                $("#save_top_topid_data", parent.document).val(news)
+                $("#save_top_topid_data_current", parent.document).val(parseInt($("#save_top_topid_data_current", parent.document).val())+1)
+
+                // 更新数据
+                url = "/monitor/top/listData?start=1&length=2&draw=1&topId="+this.imageConnectTopId
+                var tdata = post({}, url)
+                tdata = tdata["data"][0]["gsonData"]
+                $("#mySavedModel", parent.document).val(tdata)
+                // 刷新
+                $("#topIframe", parent.document).attr("src", "/monitor/top/topIframe");
+                edit_top(this)
+                $("#mySavedModelDelete", parent.document).val(JSON.stringify(this.editData))
+              })
+             scene.add(window["nodeData"+d["key"] + "connecttotop"]);
+             scene.add(new JTopo.Link( window["nodeData"+d["key"]], window["nodeData"+d["key"] + "connecttotop"],  ""));
+          }else{
+            // 点击事件
+            window["nodeData"+d["key"]].click(function () {
+        	$("#top_to", parent.document).val(this.key)
+            })
+          }
+
+          // 拖动事件监听
+          window["nodeData"+d["key"]].mousedrag(function () {
+               reset_top(this.key, this.getBound()["left"], this.getBound()["top"], Math.floor(Math.random()*1000));
+          })
+
+        }
+
+          for(dataI=0;dataI<dataNodeData.length;dataI++){
+             var d ;
+             d = dataNodeData[dataI];
+             if(d["circleTop"] == "1"){
+                  JTopo.layout.layoutNode(scene, window["nodeData"+d["key"]], true);
+             }
+           }
+
+
+            // 数据刷新 
+        var counter_metric = 0
+        var interval_timer_metric = setInterval(function () {
+            var rand = Math.floor(Math.random()*dataNodeData.length)
+            for(dataI=0;dataI<dataNodeData.length;dataI++){
+              var d ;
+              d = dataNodeData[dataI];
+              index =  d["topLinkValue"]
+              if(!index){continue}
+              metricUpdateTime = d["metricUpdateTime"]
+              if(!metricUpdateTime){
+                metricUpdateTime = 15 // 默认15秒
+              }
+              var now = new Date().getTime() / 1000;
+              var is_check = false;
+              var check_key = "top_node_data_update_time_"+d["key"]
+              old = $("#"+check_key, parent.document).val()
+              if(!old){
+                 $("#top_node_data_update_time", parent.document).append("<input type='hidden' value="+now+" id='"+check_key+"'>")
+                is_check = true;
+              }else{
+                 if(now - parseInt(old) > parseInt(metricUpdateTime)){
+                     is_check = true;
+                 }
+              }
+              if(!is_check){
+                  continue;
+              }else{
+                 $("#"+check_key, parent.document).val(now) 
+              }
+              var index_data = index.split(",")
+              for(index_datai=0; index_datai<index_data.length;index_datai++){
+                 make_metric_top(scene, d, 1);
+              }
+  	   }
+           counter_metric += 1
+               // 10分钟后停止
+           if(counter_metric > 100 ){
+                  clearInterval(interval_timer_metric)
+                  clearInterval(get_data_interval)
+           }
+        }, 1500);
+
+
+            // 数据刷新 
+        var switchColor = "57,175,72"
+        var interval_timer = setInterval(function () {
+            var rand = Math.floor(Math.random()*dataNodeData.length)
+            for(dataI=0;dataI<dataNodeData.length;dataI++){
+              var d ;
+              d = dataNodeData[dataI];
+              index =  d["topLinkValue"]
+              if(!index){continue}
+              var index_data = index.split(",")
+              for(index_datai=0; index_datai<index_data.length;index_datai++){
+                var stat = get_status(index_maps_data[d["text"]+index_data[index_datai]+"status"]);
+                $("#timerintervaldata", parent.document).val(dataI)
+                if(d["graphType"] == "image" && stat[0] != "正常" ){
+                    window["nodeData"+d["key"]].alarm = "" 
+                    window["nodeData"+d["key"]].alarmColor = stat[2];
+                }else{
+                  if(rand == dataI){
+                   window["nodeData"+d["key"]].alarmColor = switchColor;
+                  }else{
+                   window["nodeData"+d["key"]].alarmColor = '0,0,0';
+                  }
+                }
+              }
+  	   }
+        }, 2500);
+ 
+
+        for(dataI=0;dataI<linkNodeData.length;dataI++){
+           var d ;
+           d = linkNodeData[dataI];
+           var to = window["nodeData"+d["to"]];
+           var src = window["nodeData"+d["src"]]
+           var topLinkSize = parseInt(d["topLinkSize"])
+           var topLinkTextColor = d["topLinkTextColor"].colorRgb()
+           var color = d["topLinkColor"].colorRgb()
+           if(d["topLinkValue"] && d["topLinkValue"].indexOf(",") == -1 ){
+             var topLinkValue = get_top_link_value(d["ip"], d["topLinkValue"], "last");
+           }else{
+             var topLinkValue = ""
+           }
+           switch(d["topLinkType"]){
+              case "link":
+                newLink(src, to, topLinkValue, color, false, topLinkSize, topLinkTextColor);
+                break;
+              case "link2":
+                newLink(src, to, topLinkValue, color, 2, topLinkSize, topLinkTextColor);
+                break;
+              case "foldLink":
+                newFoldLink(src, to, topLinkValue, color, false, topLinkSize, topLinkTextColor);
+                break;
+              case "foldLink2":
+                newFoldLink(src, to, topLinkValue, color,"horizontal", 2, topLinkSize, topLinkTextColor);
+                break;
+              case "flexionalLink":
+                newFlexionalLink(src, to, topLinkValue, color,"", false, topLinkSize, topLinkTextColor);
+                break;
+              case "flexionalLink2":
+                newFlexionalLink(src, to, topLinkValue,color, "vertical",2, topLinkSize, topLinkTextColor);
+                break;
+              case "curveLink":
+                newCurveLink(src, to, topLinkValue, color, false, topLinkSize, topLinkTextColor);
+                break;
+              default :
+                linkNode(src, to, "default", color);
+                break;
+           }
+        }
+
+        stage.add(scene);
+};
+make_top();
+</script>

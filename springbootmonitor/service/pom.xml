@@ -31,6 +31,10 @@
 
         <dependency>
             <groupId>com.keepgulp.monitor</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.keepgulp.monitor</groupId>
             <artifactId>repository</artifactId>
         </dependency>
 
