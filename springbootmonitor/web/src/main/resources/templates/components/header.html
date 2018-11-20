@@ -1,0 +1,7 @@
+<header th:fragment="header (tab)">
+    <ul>
+        <li><span th:class="${tab eq 'news'} ? active">news</span></li>
+        <li><span th:class="${tab eq 'blog'} ? active">blog</span></li>
+        <li><span th:class="${tab eq 'post'} ? active">post</span></li>
+    </ul>
+</header>

@@ -36,7 +36,8 @@ public class IndexController {
      */
     @RequestMapping("/")
     public String index(){
-        return "monitor/global/newIndex";
+//        return "monitor/global/newIndex";
+        return "index";
     }
 
 //    @RequestMapping("/")
